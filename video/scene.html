@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>电费侦探 · 讲解视频场景</title>
+<style>
+  :root { --bg:#211915; --ink:#f6ece4; --muted:#b39f92; --o:#d97757; --o2:#ffb36b; --line:#4a3a32; --green:#6fd39a; --red:#ff6b5e; --blue:#6fb4ff; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; width:1920px; height:1080px; overflow:hidden; background:var(--bg); color:var(--ink);
+    font-family:"WenQuanYi Zen Hei","Noto Color Emoji",sans-serif; }
+  .px { font-family: Unifont, "WenQuanYi Zen Hei Sharp", monospace; -webkit-font-smoothing:none; }
+  #stage { position:absolute; inset:0; }
+  #bg { position:absolute; inset:0; background:
+      radial-gradient(900px 520px at 55% 32%, #3d2b22 0%, transparent 70%),
+      radial-gradient(640px 420px at 12% 82%, #40271b 0%, transparent 70%); }
+  #dots { position:absolute; inset:0; background-image: radial-gradient(#ffffff10 1.5px, transparent 1.6px); background-size: 32px 32px; }
+  #vignette { position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse at center, transparent 55%, #00000088 100%); }
+  canvas.full { position:absolute; left:0; top:0; pointer-events:none; }
+
+  /* HUD */
+  #hud { position:absolute; left:36px; top:34px; width:410px; padding:14px 18px; background:#2c211c; border:4px solid var(--o2); box-shadow: 0 0 0 4px #2c211c, 0 0 0 8px #7a4a30; }
+  #hud .t { display:flex; justify-content:space-between; font-size:24px; color:var(--o2); margin-bottom:10px; }
+  #hud .r { display:flex; justify-content:space-between; font-size:20px; color:var(--muted); padding:6px 0; border-top:2px dashed #4a3a32; }
+  #hud .r b { color:var(--ink); font-weight:normal; }
+  #hud .r b.hot { color:var(--o2); } #hud .r b.bad { color:var(--red); } #hud .r b.good { color:var(--green); }
+  #hud .bar { height:10px; background:#1a1310; margin:2px 0 4px; }
+  #hud .bar i { display:block; height:100%; width:0; background:var(--o); }
+  #hud .pop { display:inline-block; }
+
+  #clawd { position:absolute; left:0; top:400px; }
+  #bubble { position:absolute; padding:10px 20px; background:#fff3e6; color:#2a1408; font-size:34px; border:4px solid #2a1408; box-shadow: 6px 6px 0 #00000066; white-space:nowrap; opacity:0; }
+  #bubble::after { content:''; position:absolute; left:40px; bottom:-22px; border:11px solid transparent; border-top-color:#2a1408; }
+  #stickers { position:absolute; inset:0; pointer-events:none; }
+  .sticker { position:absolute; padding:10px 18px; background:#2c211c; border:3px solid var(--o2); font-size:28px; white-space:nowrap; box-shadow: 5px 5px 0 #0008; }
+
+  /* 产品窗口 */
+  #win { position:absolute; left:490px; top:46px; width:1178px; height:776px; background:#16110e; border:2px solid #574338; border-radius:14px; overflow:hidden; box-shadow: 0 30px 80px #000a, 0 0 0 6px #ffffff08; }
+  #win .bar { height:40px; display:flex; align-items:center; gap:8px; padding:0 14px; background:#2a201b; border-bottom:1px solid #4a3a32; position:relative; z-index:2; }
+  #win .bar i { width:12px; height:12px; border-radius:50%; background:#ff5f57; } #win .bar i:nth-child(2){background:#febc2e} #win .bar i:nth-child(3){background:#28c840}
+  #win .bar span { margin:0 auto; font-size:15px; color:var(--muted); background:#1d1714; padding:3px 40px; border-radius:6px; }
+  #frameBox { width:1178px; height:736px; overflow:hidden; position:relative; }
+  #camera { position:absolute; left:0; top:0; transform-origin:0 0; }
+  #app { width:1280px; height:800px; border:0; display:block; }
+  #hilite { position:absolute; border:5px dashed var(--red); border-radius:18px; opacity:0; box-shadow: 0 0 0 4000px #00000055; }
+  #chapterCard { position:absolute; left:0; top:60px; padding:14px 34px 14px 26px; background:var(--o2); color:#2a1408; font-size:34px; font-weight:bold; box-shadow: 6px 6px 0 #0009; z-index:3; transform:translateX(-110%); }
+  #lens { position:absolute; width:300px; height:300px; border-radius:50%; border:16px solid #3a2a20; box-shadow: inset 0 0 0 6px #c99a6b, 0 0 0 5px #000, 0 20px 40px #000a; background: radial-gradient(circle at 35% 30%, #ffffff40, #9fd3ff18 45%, transparent 70%); opacity:0; z-index:4; }
+  #lens::after { content:''; position:absolute; width:40px; height:150px; background:#3a2a20; left:236px; top:240px; transform:rotate(-45deg); border-radius:10px; border:4px solid #000; }
+
+  /* 片头 */
+  #title { position:absolute; left:490px; top:46px; width:1178px; height:776px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  #title h1 { font-size:150px; margin:0; letter-spacing:14px; color:var(--o2); display:flex; }
+  #title h1 span { display:inline-block; text-shadow: 9px 9px 0 #7a3f22; }
+  #title h2 { font-size:36px; margin:22px 0 0; color:var(--ink); font-weight:normal; letter-spacing:4px; min-height:44px; }
+  #title p { font-size:26px; color:var(--muted); margin-top:30px; }
+  #bills { position:absolute; inset:0; pointer-events:none; }
+
+  /* 右侧章节 */
+  #chapters { position:absolute; left:1696px; top:60px; width:210px; }
+  #chapters .h { font-size:20px; color:var(--muted); margin-bottom:16px; }
+  #chapters div.c { font-size:21px; padding:11px 10px; margin-bottom:10px; color:#6f5d52; border-left:6px solid #3a2c25; }
+  #chapters div.c.on { color:var(--ink); border-left-color:var(--o2); background:#ffb36b18; }
+  #chapters div.c.done { color:var(--muted); border-left-color:var(--o); }
+  #clock { position:absolute; left:1700px; top:690px; width:190px; text-align:center; }
+  #clock .face { font-size:40px; color:var(--o2); }
+  #clock small { display:block; font-size:16px; color:var(--muted); margin-top:4px; }
+
+  /* 闭环转盘 */
+  #loop { position:absolute; left:1693px; top:470px; width:210px; height:210px; opacity:0; }
+  #loop .ring { position:absolute; inset:20px; border:6px dashed var(--o2); border-radius:50%; }
+  #loop span { position:absolute; font-size:21px; padding:3px 8px; background:#2c211c; border:2px solid var(--o); white-space:nowrap; transform:translate(-50%,-50%); }
+
+  /* 字幕 */
+  #sub { position:absolute; left:0; right:0; top:858px; text-align:center; }
+  #sub .zh { font-size:48px; font-weight:bold; text-shadow: 0 3px 0 #000, 0 0 18px #000; letter-spacing:1px; }
+  #sub .zh em { font-style:normal; color:var(--o2); }
+  #sub .en { font-size:25px; color:#d9c8bc; margin-top:12px; text-shadow: 0 2px 0 #000; }
+  #brand { position:absolute; left:36px; bottom:24px; font-size:18px; color:var(--o2); }
+  #brand span { color:var(--muted); }
+  #tags { position:absolute; right:36px; bottom:24px; font-size:18px; color:var(--muted); }
+
+  #stamp { position:absolute; left:1080px; top:420px; transform:translate(-50%,-50%) rotate(-10deg); font-size:120px; font-weight:900; color:var(--red);
+    border:12px solid var(--red); padding:0 40px; border-radius:20px; background:#211915dd; opacity:0; letter-spacing:8px; white-space:nowrap; z-index:6; }
+
+  /* 架构图 */
+  #arch { position:absolute; left:490px; top:46px; width:1178px; height:776px; background:#1d1613f4; border-radius:14px; border:2px solid #574338; opacity:0; padding:46px 56px; }
+  #arch h3 { margin:0 0 30px; font-size:40px; color:var(--o2); }
+  .flow { display:grid; grid-template-columns: 1fr 64px 1.3fr 64px 1fr; align-items:center; }
+  .box { border:4px solid var(--line); background:#2a201b; padding:20px 16px; text-align:center; font-size:23px; line-height:1.6; min-height:220px; display:flex; flex-direction:column; justify-content:center; }
+  .box b { display:block; font-size:30px; color:var(--ink); margin-bottom:8px; }
+  .box small { color:var(--muted); font-size:19px; }
+  .box.llm { border-color:var(--o); box-shadow:0 0 30px #d9775755; }
+  .arrow { text-align:center; font-size:46px; color:var(--o2); }
+  .row2 { display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-top:28px; }
+  .store { border:4px dashed var(--blue); padding:16px; text-align:center; font-size:22px; background:#6fb4ff12; }
+  .store b { color:var(--blue); font-size:27px; display:block; margin-bottom:6px; }
+  .engine { border:4px dashed var(--green); padding:16px; text-align:center; font-size:22px; background:#6fd39a12; }
+  .engine b { color:var(--green); font-size:27px; display:block; margin-bottom:6px; }
+
+  /* 片尾 */
+  #outro { position:absolute; left:490px; top:46px; width:1178px; height:776px; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; background:#211915; border-radius:14px; }
+  #outro h1 { font-size:120px; margin:0; color:var(--o2); letter-spacing:10px; text-shadow: 8px 8px 0 #7a3f22; }
+  #outro p { font-size:32px; color:var(--ink); margin:22px 0 0; }
+  #outro .feat { margin-top:34px; display:flex; gap:18px; }
+  #outro .feat span { font-size:26px; padding:10px 20px; background:#2c211c; border:3px solid var(--line); }
+  #outro .tag { margin-top:34px; display:flex; gap:20px; }
+  #outro .tag span { font-size:28px; padding:10px 24px; border:3px solid var(--o); color:var(--o2); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div><div id="dots"></div>
+  <canvas id="bgfx" class="full" width="1920" height="1080"></canvas>
+
+  <div id="hud" class="px">
+    <div class="t"><span>🔍 Claude 侦探社</span><span>第 10 月案</span></div>
+    <div class="r"><span>案件</span><b>电费去哪儿了？</b></div>
+    <div class="r"><span>已找到线索</span><b id="h-clue" class="hot">0 / 3</b></div>
+    <div class="r"><span>计划兑现率</span><b id="h-rate">--</b></div>
+    <div class="r"><span>计划预计年省</span><b id="h-save" class="good">¥796</b></div>
+    <div class="r" style="border-top:0;padding-bottom:0"><span>破案进度</span><b id="h-prog">0%</b></div>
+    <div class="bar"><i id="h-bar"></i></div>
+  </div>
+
+  <div id="title">
+    <h1 id="titleChars"><span>电</span><span>费</span><span>侦</span><span>探</span></h1>
+    <h2 id="titleSub"></h2>
+    <p class="px" id="titleTag">iCAN 大赛 · AI 产品实现赛道</p>
+  </div>
+  <div id="bills"></div>
+
+  <div id="win">
+    <div class="bar"><i></i><i></i><i></i><span>电费侦探 · 会记事的家庭用电 AI 管家</span></div>
+    <div id="frameBox">
+      <div id="camera"><iframe id="app"></iframe></div>
+      <div id="hilite"></div>
+      <div id="lens"></div>
+      <div id="chapterCard" class="px"></div>
+    </div>
+  </div>
+
+  <div id="arch">
+    <h3>⚙️ 技术实现：大模型 × 长期记忆 × 电气计算引擎</h3>
+    <div class="flow">
+      <div class="box"><b>📷 💬 用户</b>每月电费单照片<br>日常聊天<br><small>“下个月要买电车”</small></div>
+      <div class="arrow">➜</div>
+      <div class="box llm"><b>🧠 大模型智能体</b>多模态读账单 · 理解口语<br>结合记忆推理 · 规划工具调用<br><small>Claude / DeepSeek / 通义千问</small></div>
+      <div class="arrow">➜</div>
+      <div class="box"><b>📊 管家面板</b>持续分析 · 省钱计划<br>记忆 · 月报</div>
+    </div>
+    <div class="row2">
+      <div class="store"><b>🗂️ 家庭档案（长期记忆）</b>remember · forget · 历史账单 · 计划状态</div>
+      <div class="engine"><b>🧮 电气计算引擎</b>E = P×负载率×t · 峰谷电价 · 节省拆分</div>
+    </div>
+  </div>
+
+  <div id="outro">
+    <h1>电费侦探</h1>
+    <p>会记事的家庭用电 AI 管家</p>
+    <div class="feat px"><span>🧠 长期记忆</span><span>📈 每月复盘</span><span>💡 计划闭环</span></div>
+    <div class="tag px"><span>#AI未来挑战赛</span><span>#AI产品实现</span></div>
+  </div>
+
+  <div id="stickers"></div>
+  <div id="loop" class="px"><div class="ring"></div></div>
+  <canvas id="clawd" width="480" height="440"></canvas>
+  <div id="bubble" class="px"></div>
+  <div id="stamp">真相只有一个！</div>
+  <canvas id="fx" class="full" width="1920" height="1080"></canvas>
+
+  <div id="chapters" class="px"><div class="h">— 案件卷宗 —</div></div>
+  <div id="clock" class="px"><div class="face" id="clk">20:00</div><small>案发时间</small></div>
+
+  <div id="sub"><div class="zh" id="zh"></div><div class="en" id="en"></div></div>
+  <div id="brand" class="px">✱ Claude 讲解 <span>· 画面、动画、配音、配乐均由代码生成</span></div>
+  <div id="tags" class="px">#AI未来挑战赛 #AI产品实现</div>
+  <div id="vignette"></div>
+</div>
+<script src="clawd.js"></script>
+<script src="director.js"></script>
+</body>
+</html>

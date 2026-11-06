@@ -1,0 +1,22 @@
+{
+  "name": "watt-detective",
+  "version": "2.0.0",
+  "description": "电费侦探 (Watt Detective) —— 会记事的家庭用电 AI 管家。把需求侧管理与电气计算引擎带进家庭。",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "electricity",
+    "ai-agent",
+    "smart-home",
+    "demand-side-management",
+    "time-of-use-tariff",
+    "电费侦探",
+    "峰谷电价"
+  ],
+  "license": "MIT"
+}

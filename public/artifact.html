@@ -1,0 +1,68 @@
+<title>电费侦探</title>
+<link rel="stylesheet" href="app.css">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⚡</span>
+      <div>
+        <div class="name">电费侦探</div>
+        <div class="sub">会记事的家庭用电 AI 管家</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <span id="hh" class="hh"></span>
+      <span id="mode" class="mode">连接中…</span>
+      <button id="resetBtn" class="ghost" type="button">切换家庭</button>
+    </div>
+  </header>
+  <div id="banner" class="banner" hidden>
+    正在查看<b>示例家庭</b>（演示数据），可以直接和小电对话试用。
+    <button id="startMine" type="button">建立我自己的家庭档案</button>
+  </div>
+  <div id="resetMenu" class="reset-menu" hidden>
+    <p>切换后当前家庭的记忆、账单和计划会被替换。</p>
+    <button id="useSample" type="button">载入示例家庭</button>
+    <button id="useBlank" type="button">从零开始建立我的家</button>
+    <button id="cancelReset" type="button" class="ghost">取消</button>
+  </div>
+
+  <main class="layout">
+    <section class="chat" aria-label="和小电对话">
+      <div class="chat-head">
+        <span class="avatar">🕵️</span>
+        <div><b>小电</b><small id="memCount">AI 用电管家</small></div>
+      </div>
+      <div id="msgs" class="msgs"></div>
+      <div class="chips" id="chips">
+        <button data-q="bill" type="button">📷 上传 10 月电费单</button>
+        <button data-q="update" type="button">✅ 更新计划，我们要买电车</button>
+        <button data-q="report" type="button">📝 生成月报</button>
+        <button data-q="ac" type="button">❄️ 空调一个月多少钱</button>
+        <button data-q="fault" type="button">🩺 一用电水壶就跳闸</button>
+      </div>
+      <form id="composer" class="composer">
+        <label class="attach" title="上传电费单">📎<input id="file" type="file" accept="image/*" hidden></label>
+        <div class="input-wrap">
+          <div id="preview" class="preview" hidden></div>
+          <textarea id="input" rows="2" placeholder="告诉小电家里的变化，或上传电费单…"></textarea>
+        </div>
+        <button class="send" id="sendBtn" type="submit">发送</button>
+      </form>
+    </section>
+
+    <section class="board">
+      <nav class="tabs" id="tabs">
+        <button data-tab="analysis" type="button">📈 持续分析</button>
+        <button data-tab="plan" type="button">💡 省钱计划</button>
+        <button data-tab="memory" type="button">🧠 记忆 <i id="memBadge"></i></button>
+        <button data-tab="appliances" type="button">🔌 电器档案</button>
+        <button data-tab="reports" type="button">📝 月报</button>
+      </nav>
+      <div class="panel" id="panel"></div>
+    </section>
+  </main>
+
+  <script src="engine.js"></script>
+  <script src="store.js"></script>
+  <script src="agent.js"></script>
+  <script src="app.js"></script>
